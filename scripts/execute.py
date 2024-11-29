@@ -1,5 +1,4 @@
-from compiler import get_bytecode
-def execute_bytecode(bytecode_instructions):
+def execute(bytecode_instructions):
     # Simulated environment to store variables and manage the stack
     variables = {}
     stack = []
@@ -8,7 +7,13 @@ def execute_bytecode(bytecode_instructions):
     def binary_op(op):
         right = stack.pop()
         left = stack.pop()
-        if op == 'DIV':
+        if op == 'ADD':
+            stack.append(left + right)  # Perform addition
+        elif op == 'SUB':
+            stack.append(left - right)  # Perform subtraction
+        elif op == 'MULT':
+            stack.append(left * right)  # Perform multiplication
+        elif op == 'DIV':
             stack.append(left / right)  # Perform division
         else:
             raise ValueError(f"Unknown binary operation: {op}")
@@ -44,7 +49,7 @@ def execute_bytecode(bytecode_instructions):
             stack.append(variables.get(var_name, None))
         
         elif op == 'BINARY_OP':
-            # Perform a binary operation (e.g., division)
+            # Perform a binary operation (e.g., addition, subtraction, etc.)
             binary_op(parts[1])
         
         elif op == 'CALL_FUNCTION':
@@ -61,12 +66,3 @@ def execute_bytecode(bytecode_instructions):
     # Collect all the results
     output_str = "\n".join(print_output)  # Combine all output into a single string, each on a new line
     return output_str
-
-
-# Updated Bytecode
-bytecode_instructions = get_bytecode()
-
-# Execute the bytecode and get the output
-result = execute_bytecode(bytecode_instructions)
-
-print(result)

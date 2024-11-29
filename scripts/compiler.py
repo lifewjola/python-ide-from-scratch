@@ -1,11 +1,6 @@
-import dis
-import types
 import ast
-from parser_simplified import get_ast
-import dis
-import types
 
-def generate_bytecode_from_ast(node):
+def generate_bytecode(node):
     bytecode_instructions = []
 
     def process_node(node):
@@ -40,31 +35,20 @@ def generate_bytecode_from_ast(node):
             process_node(node.value)
         elif isinstance(node, ast.Call):
             # Process function calls (like print)
-            process_node(node.func)
-            for arg in node.args:
-                process_node(arg)
-            bytecode_instructions.append(f"CALL_FUNCTION {len(node.args)}")
+            if isinstance(node.func, ast.Name) and node.func.id == 'print':
+                # For the print function, load the arguments onto the stack
+                for arg in node.args:
+                    process_node(arg)
+                # Append the call to print
+                bytecode_instructions.append(f"CALL_FUNCTION {len(node.args)}")
+            else:
+                # Handle other function calls (if needed)
+                process_node(node.func)
+                for arg in node.args:
+                    process_node(arg)
+                bytecode_instructions.append(f"CALL_FUNCTION {len(node.args)}")
 
     # Start processing the root node
     process_node(node)
     
     return bytecode_instructions
-
-# The AST you provided as input
-ast_tree = get_ast()
-
-# Generate bytecode instructions
-bytecode_instructions = generate_bytecode_from_ast(ast_tree)
-print(bytecode_instructions)
-
-def get_bytecode():
-    instructions = []
-    for instruction in bytecode_instructions:
-        instructions.append(instruction)
-
-    return instructions
-
-# def get_bytecodes():
-
-
-    
