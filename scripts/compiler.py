@@ -8,6 +8,7 @@ def generate_bytecode(node):
             # Process the body of the module (which contains statements like assignments, print, etc.)
             for stmt in node.body:
                 process_node(stmt)
+
         elif isinstance(node, ast.Assign):
             # Handle assignment (target = value)
             for target in node.targets:
@@ -19,20 +20,25 @@ def generate_bytecode(node):
                     # Handle binary operation assignment
                     process_node(node.value)  # Process the operation (left, right)
                     bytecode_instructions.append(f"STORE_NAME {target.id}")
+
         elif isinstance(node, ast.BinOp):
             # Handle binary operations like division, addition, etc.
             process_node(node.left)  # Process the left operand
             process_node(node.right)  # Process the right operand
             bytecode_instructions.append(f"BINARY_OP {type(node.op).__name__.upper()}")
+
         elif isinstance(node, ast.Name):
             # Load a variable (either for reading or writing)
             bytecode_instructions.append(f"LOAD_NAME {node.id}")
+
         elif isinstance(node, ast.Constant):
             # Load a constant value
             bytecode_instructions.append(f"LOAD_CONST {node.value}")
+
         elif isinstance(node, ast.Expr):
             # Handle expression (like print)
             process_node(node.value)
+            
         elif isinstance(node, ast.Call):
             # Process function calls (like print)
             if isinstance(node.func, ast.Name) and node.func.id == 'print':
